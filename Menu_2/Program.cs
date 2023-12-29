@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
-services.AddSingleton<IApp, App>();
-services.AddSingleton<IRepository<Meal>, MenuSqlRepository<Meal>>();
-services.AddSingleton<IRepository<Drink>, MenuSqlRepository<Drink>>();
+services.AddTransient<IApp, App>();
+services.AddTransient<IAdding, Adding>();
+services.AddTransient<IRemoving, Removing>();
+services.AddTransient<IViewing, Viewing>();
+services.AddTransient<IRepository<Meal>, MenuSqlRepository<Meal>>();
+services.AddTransient<IRepository<Drink>, MenuSqlRepository<Drink>>();
 services.AddDbContext<MenuDbContext>();
 
 var serviceProvider = services.BuildServiceProvider();

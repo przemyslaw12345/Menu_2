@@ -1,8 +1,20 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 
-internal class App : IApp
+public class App : IApp
 {
+	private readonly IAdding _adding;
+	private readonly IRemoving _removing;
+	private readonly IViewing _viewing;
+	public App(
+		IAdding adding,
+		IRemoving removing,
+		IViewing viewing
+		) 
+	{
+		_adding = adding;
+		_removing = removing;
+		_viewing = viewing;
+	}
 	public void Run()
 	{
 		bool isWroking = true;
@@ -77,13 +89,13 @@ internal class App : IApp
 		switch (optionSelected)
 		{
 			case "view":
-				ViewMenuGeneralMethod(drinkRepository, foodRepository);
+				_viewing.ViewMenuGeneralMethod(drinkRepository, foodRepository);
 				break;
 			case "add":
-				AddToMenuMethod(drinkRepository, foodRepository);
+				_adding.AddToMenuMethod(drinkRepository, foodRepository);
 				break;
 			case "remove":
-				RemoveFromMenuMethod(drinkRepository, foodRepository);
+				_removing.RemoveFromMenuMethod(drinkRepository, foodRepository);
 				break;
 			case "exit":
 				Console.WriteLine("Thank you for trying Soylent Green Cafe where our Customers are our specialty!");
@@ -95,288 +107,6 @@ internal class App : IApp
 
 		}
 		return isWroking;
-	}
-	//--------------------------------------------------------------------------------------------------------------------------------------------------------------
-	void ViewMenuGeneralMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
-	{
-		Console.Clear();
-		MenuGreeting();
-		ViewMenu(drinkRepository);
-		ViewMenu(foodRepository);
-	}
-	void MenuGreeting()
-	{
-		Console.WriteLine($"Thank you for dining at Soylent Green Cafe where our Customer is our specialty!!{Environment.NewLine}" +
-			$"Please take a look at our menu!! {Environment.NewLine}"
-			);
-	}
-	void ViewMenu(IReadRepository<ICafeMenu> subMenuRepository)
-		
-	{
-		var items = subMenuRepository.GetAll();
-		foreach (var item in items)
-		{
-			
-			Console.WriteLine(item.Id+ ". "+ item.itemName + " " + item.itemPrice + Environment.NewLine + String.Join(", ", item.ingredients));
-			//item.ingredients.ForEach(Console.WriteLine);
-		}
-	}
-	//--------------------------------------------------------------------------------------------------------------------------------------------------------------
-	void AddToMenuMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
-	{
-		bool isWorking = true;
-		while (isWorking)
-		{
-			Console.Clear();
-			WhatToAddText();
-			string optionToAddSelected = optionToAddSelectedMethod();
-			selectingWhatToAddToTheMenuMethod(optionToAddSelected, drinkRepository, foodRepository);
-			isWorking = ContinueAddingMethod(isWorking);
-		}
-	}
-	void WhatToAddText()
-	{
-		Console.WriteLine(
-			$"What would you like to add to the menu? {Environment.NewLine}" +
-			$"A [Drink]? {Environment.NewLine}" +
-			$"A [Meal] {Environment.NewLine}"
-			);
-	}
-	string optionToAddSelectedMethod() => Console.ReadLine().ToLower();
-	void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
-	{
-		bool isWorkingSubLoop = true;
-		while (isWorkingSubLoop)
-		{
-			switch (optionToAddSelected)
-			{
-				case "drink":
-					//AddDrinkMethod(drinkRepository);
-					AddMethod<Drink>(drinkRepository);
-					isWorkingSubLoop = false;
-					break;
-				case "meal":
-					//AddMealMethod(foodRepository);
-					AddMethod<Meal>(foodRepository);
-					isWorkingSubLoop = false;
-					break;
-				default:
-					Console.WriteLine("You entered an invalid option, please try again");
-					optionToAddSelected = optionToAddSelectedMethod();
-					isWorkingSubLoop = true;
-					Console.ReadKey();
-					break;
-			}
-		}
-	}
-	void AddMethod<T>(IWriteRepository<T> tempRepository)
-		where T : class, ICafeMenu, new()
-	{
-		Type type = typeof(T);
-
-		Console.WriteLine($"What is the {type.ToString().ToLower()}s name? {Environment.NewLine}");
-		string nameOfItem = NamingItemMethod();
-
-		Console.WriteLine($"What is the {type.ToString().ToLower()}s price? {Environment.NewLine}");
-		float priceOfItem = PriceItemMethod();
-
-		Console.WriteLine($"Are there any ingredients you would like to display? [y/n] {Environment.NewLine}");
-		char yesOrNo = DetermineYesOrNeMethod();
-		List<string> ingredientsTempList = new List<string>();
-		switch (yesOrNo)
-		{
-			case 'y':
-				ingredientsTempList = IngredientsOfItems();
-				break;
-			case 'n':
-				ingredientsTempList = null;
-				break;
-		}
-
-		tempRepository.Add(new T { itemName = nameOfItem, itemPrice = priceOfItem, ingredients = ingredientsTempList });
-		tempRepository.Save();
-	}
-	private char DetermineYesOrNeMethod()
-	{
-		bool subLoop = true;
-		char yesOrNo = 'n';
-		while (subLoop)
-		{
-			yesOrNo = Convert.ToChar(Console.ReadLine().ToLower());
-			if (yesOrNo == 'y')
-			{
-				subLoop = false;
-			}else if (yesOrNo == 'n')
-			{
-				subLoop = false;
-			}else
-			{
-				Console.WriteLine("Improper input, would you like to add any ingrediants for display? [y/n]");
-				subLoop = false;
-			}
-		}
-		return yesOrNo;
-	}
-	List<string> IngredientsOfItems()
-	{
-		List<string> ingrediantsTempList = new List<string>();
-		string ingrediant;
-		bool subLoop = true;
-		int counter = 0;
-		while (subLoop)
-		{
-			switch (counter)
-			{
-				case 0:
-                    Console.WriteLine("Please add first ingrediant.");
-					counter++;
-					break;
-				case 1:
-                    Console.WriteLine("Please add next ingrediant.");
-					break;
-            }
-			ingrediant = NamingItemMethod().ToLower();
-			ingrediantsTempList.Add(ingrediant);
-            Console.WriteLine("Add another ingrediant? [y/n]");
-			char yesOrNo = DetermineYesOrNeMethod();
-			switch (yesOrNo)
-			{
-				case 'y':
-					subLoop = true;
-					break;
-				case 'n':
-					subLoop = false;
-                    Console.WriteLine("Thank you for adding all the ingrediants, have a nice day!");
-                    break;
-			}
-		}
-		return ingrediantsTempList;
-	}
-	string NamingItemMethod() => Console.ReadLine();
-	float PriceItemMethod() => float.Parse(Console.ReadLine());
-	bool ContinueAddingMethod(bool isWorking)
-	{
-		bool isWorkingSubLoop = true;
-		Console.WriteLine("Would you like to request another item to the menu? Y/N");
-		while (isWorkingSubLoop)
-		{
-			string willContinue = Console.ReadLine().ToLower();
-			if (willContinue == "y")
-			{
-				isWorking = true;
-				isWorkingSubLoop = false;
-			}
-			else if (willContinue == "n")
-			{
-				isWorking = false;
-				isWorkingSubLoop = false;
-			}
-			else
-			{
-				isWorkingSubLoop = true;
-				Console.WriteLine("Please write y for yes and n for no");
-			}
-		}
-		return isWorking;
-	}
-	//--------------------------------------------------------------------------------------------------------------------------------------------------------------
-	void RemoveFromMenuMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
-	{
-		bool isWorking = true;
-		while (isWorking)
-		{
-			Console.Clear();
-			WhatToRemoveText();
-			string optionToRemoveSelected = optionToRemoveSelectedMethod();
-			selectingWhatToRemoveFromTheMenuMethod(optionToRemoveSelected, drinkRepository, foodRepository);
-			isWorking = ContinueRemovingMethod(isWorking);
-		}
-	}
-	void WhatToRemoveText()
-	{
-		Console.WriteLine("Would you like to remove a [drink] or [meal] from the menu");
-	}
-	string optionToRemoveSelectedMethod() => (Console.ReadLine());
-	void selectingWhatToRemoveFromTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
-	{
-		bool isWorkingSubLoop = true;
-		while (isWorkingSubLoop)
-		{
-			switch (optionToAddSelected)
-			{
-				case "drink":
-					//RemoveDrinkMethod(drinkRepository);
-					RemoveMethod<Drink>(drinkRepository);
-					isWorkingSubLoop = false;
-					break;
-				case "meal":
-					//RemoveMealMethod(foodRepository);
-					RemoveMethod<Meal>(foodRepository);
-					isWorkingSubLoop = false;
-					break;
-				default:
-					Console.WriteLine("You entered an invalid option, please try again");
-					optionToAddSelected = optionToAddSelectedMethod();
-					isWorkingSubLoop = true;
-					Console.ReadKey();
-					break;
-			}
-		}
-	}
-	void RemoveMethod<T>(IRepository<T> tempRepository)
-		where T : class, ICafeMenu
-	{
-		Type type = typeof(T);
-		Console.WriteLine($"Which {type.Name.ToLower()} do you want to remove?");
-		ViewMenu(tempRepository);
-		int removeOptionNumber = RemoveOptionNumberMethod();
-		var itemToRemove = tempRepository.GetSpecific(removeOptionNumber);
-		tempRepository.RemoveItem(itemToRemove);
-		tempRepository.Save();
-	}
-	//void RemoveDrinkMethod(IRepository<Drink> drinkRepository)
-	//{
-	//	Console.WriteLine("Which drink do you want to remove?");
-	//	ViewMenu(drinkRepository);
-	//	int removeOptionNumber = RemoveOptionNumberMethod();
-	//	var itemToRemove = drinkRepository.GetSpecific(removeOptionNumber);
-	//	drinkRepository.RemoveItem(itemToRemove);
-	//	drinkRepository.Save();
-	//}
-	//void RemoveMealMethod(IRepository<Meal> foodRepository)
-	//{
-	//	Console.WriteLine("Which meal do you want to remove?");
-	//	ViewMenu(foodRepository);
-	//	int removeOptionNumber = RemoveOptionNumberMethod();
-	//	var itemToRemove = foodRepository.GetSpecific(removeOptionNumber);
-	//	foodRepository.RemoveItem(itemToRemove);
-	//	foodRepository.Save();
-	//}
-	int RemoveOptionNumberMethod() => int.Parse(Console.ReadLine());
-	bool ContinueRemovingMethod(bool isWorking)
-	{
-		bool isWorkingSubLoop = true;
-		Console.WriteLine("Would you like to continue removing items? y/n");
-		while (isWorkingSubLoop)
-		{
-			string willContinue = Console.ReadLine().ToLower();
-			if (willContinue == "y")
-			{
-				isWorking = true;
-				isWorkingSubLoop = false;
-			}
-			else if (willContinue == "n")
-			{
-				isWorking = false;
-				isWorkingSubLoop = false;
-			}
-			else
-			{
-				isWorkingSubLoop = true;
-				Console.WriteLine("Please write y for yes and n for no");
-			}
-		}
-		return isWorking;
 	}
 }
 

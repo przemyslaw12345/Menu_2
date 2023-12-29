@@ -1,4 +1,4 @@
-﻿internal interface ICafeMenu
+﻿public interface ICafeMenu
 {
 	public int Id { get; set; }
 	public string itemName { get; set; }

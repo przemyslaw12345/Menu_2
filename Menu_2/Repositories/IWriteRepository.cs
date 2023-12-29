@@ -1,5 +1,5 @@
 ﻿
-internal interface IWriteRepository<in T>
+public interface IWriteRepository<in T>
 	where T : class, ICafeMenu
 {
 	void Add(T item);

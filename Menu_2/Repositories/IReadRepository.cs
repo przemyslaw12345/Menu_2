@@ -1,5 +1,5 @@
 ﻿
-internal interface IReadRepository<out T>
+public interface IReadRepository<out T>
 	where T : class, ICafeMenu
 {
 	public T GetSpecific(int id);
