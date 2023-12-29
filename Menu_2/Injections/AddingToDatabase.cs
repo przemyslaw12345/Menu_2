@@ -1,5 +1,5 @@
 ﻿
-public class Adding : IAdding
+public class AddingToDatabase : IAddingToDatabase
 	{
 	public void AddToMenuMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
@@ -8,11 +8,12 @@ public class Adding : IAdding
 		{
 			Console.Clear();
 			WhatToAddText();
-			string optionToAddSelected = optionToAddSelectedMethod();
-			selectingWhatToAddToTheMenuMethod(optionToAddSelected, drinkRepository, foodRepository);
+			string optionToAddSelected = OptionToAddSelectedMethod();
+			SelectingWhatToAddToTheMenuMethod(optionToAddSelected, drinkRepository, foodRepository);
 			isWorking = ContinueAddingMethod(isWorking);
 		}
 	}
+
 	void WhatToAddText()
 	{
 		Console.WriteLine(
@@ -21,8 +22,10 @@ public class Adding : IAdding
 			$"A [Meal] {Environment.NewLine}"
 			);
 	}
-	public string optionToAddSelectedMethod() => Console.ReadLine().ToLower();
-	void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
+
+	public string OptionToAddSelectedMethod() => Console.ReadLine().ToLower();
+	
+	void SelectingWhatToAddToTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
 		bool isWorkingSubLoop = true;
 		while (isWorkingSubLoop)
@@ -41,13 +44,14 @@ public class Adding : IAdding
 					break;
 				default:
 					Console.WriteLine("You entered an invalid option, please try again");
-					optionToAddSelected = optionToAddSelectedMethod();
+					optionToAddSelected = OptionToAddSelectedMethod();
 					isWorkingSubLoop = true;
 					Console.ReadKey();
 					break;
 			}
 		}
 	}
+
 	void AddMethod<T>(IWriteRepository<T> tempRepository)
 		where T : class, ICafeMenu, new()
 	{
@@ -72,9 +76,10 @@ public class Adding : IAdding
 				break;
 		}
 
-		tempRepository.Add(new T { itemName = nameOfItem, itemPrice = priceOfItem, ingredients = ingredientsTempList });
+		tempRepository.Add(new T { ItemName = nameOfItem, ItemPrice = priceOfItem, Ingredients = ingredientsTempList });
 		tempRepository.Save();
 	}
+
 	private string DetermineYesOrNeMethod()
 	{
 		bool subLoop = true;
@@ -100,6 +105,7 @@ public class Adding : IAdding
 		
 		return yesOrNo;
 	}
+
 	List<string> IngredientsOfItems()
 	{
 		List<string> ingrediantsTempList = new List<string>();
@@ -135,8 +141,11 @@ public class Adding : IAdding
 		}
 		return ingrediantsTempList;
 	}
+
 	string NamingItemMethod() => Console.ReadLine();
+
 	float PriceItemMethod() => float.Parse(Console.ReadLine());
+
 	bool ContinueAddingMethod(bool isWorking)
 	{
 		bool isWorkingSubLoop = true;

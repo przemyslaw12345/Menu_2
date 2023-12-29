@@ -11,8 +11,10 @@ internal class MenuSqlRepository<T>:
 		_dbContext = dbContext;
 		_dbSet = _dbContext.Set<T>();
 	}
+
 	public event EventHandler<T> RemovedItem;
 	public event EventHandler<T> AddedItem;
+
 	public void Add(T item)
 	{
 		_dbSet.Add(item);

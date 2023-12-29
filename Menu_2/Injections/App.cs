@@ -2,19 +2,21 @@
 
 public class App : IApp
 {
-	private readonly IAdding _adding;
-	private readonly IRemoving _removing;
-	private readonly IViewing _viewing;
+	private readonly IAddingToDatabase _adding;
+	private readonly IRemovingFromDatabase _removing;
+	private readonly IViewingItemsInDatabase _viewing;
+
 	public App(
-		IAdding adding,
-		IRemoving removing,
-		IViewing viewing
+		IAddingToDatabase adding,
+		IRemovingFromDatabase removing,
+		IViewingItemsInDatabase viewing
 		) 
 	{
 		_adding = adding;
 		_removing = removing;
 		_viewing = viewing;
 	}
+
 	public void Run()
 	{
 		bool isWroking = true;
@@ -30,11 +32,12 @@ public class App : IApp
 		{
 			Console.Clear();
 			Greeting();
-			string optionSelected = optionSelectedMethod();
-			isWroking = selectingWhatUserWishesToDoMethod(isWroking, optionSelected, drinkRepository, mealRepository);
+			string optionSelected = OptionSelectedMethod();
+			isWroking = SelectingWhatUserWishesToDoMethod(isWroking, optionSelected, drinkRepository, mealRepository);
 			Console.ReadKey();
 		}
 	}
+
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	void AddEventItemToList(object? sender, CafeMenu e)
 	{
@@ -46,11 +49,12 @@ public class App : IApp
 			jsonAddedItemEventList = File.ReadAllText(addedItemEvent);
 			addedItemEventList = JsonSerializer.Deserialize<List<string>>(jsonAddedItemEventList);
 		}
-		string itemAdded = $"Date Added: {DateTime.Now}, Menu Item: {e.itemName}, Menu Price: {e.itemPrice}, From: {sender.GetType().Name}";
+		string itemAdded = $"Date Added: {DateTime.Now}, Menu Item: {e.ItemName}, Menu Price: {e.ItemPrice}, From: {sender.GetType().Name}";
 		addedItemEventList.Add(itemAdded);
 		jsonAddedItemEventList = JsonSerializer.Serialize(addedItemEventList);
 		File.WriteAllText(addedItemEvent, jsonAddedItemEventList);
 	}
+
 	void RemoveEventItemToList(object? sender, CafeMenu e)
 	{
 		const string removedItemEvent = "RemovedItemEvent.json";
@@ -61,11 +65,12 @@ public class App : IApp
 			jsonRemovedItemEventList = File.ReadAllText(removedItemEvent);
 			removedItemEventList = JsonSerializer.Deserialize<List<string>>(jsonRemovedItemEventList);
 		}
-		string itemRemoved = $"Date Removed: {DateTime.Now}, Menu Item: {e.itemName}, Menu Price: {e.itemPrice}, From: {sender.GetType().Name}";
+		string itemRemoved = $"Date Removed: {DateTime.Now}, Menu Item: {e.ItemName}, Menu Price: {e.ItemPrice}, From: {sender.GetType().Name}";
 		removedItemEventList.Add(itemRemoved);
 		jsonRemovedItemEventList = JsonSerializer.Serialize(removedItemEventList);
 		File.WriteAllText(removedItemEvent, jsonRemovedItemEventList);
 	}
+
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------
 	void Greeting()
 	{
@@ -83,8 +88,10 @@ public class App : IApp
 			$"Input preferred choice within []?"
 			);
 	}
-	static string optionSelectedMethod() => Console.ReadLine().ToLower();
-	bool selectingWhatUserWishesToDoMethod(bool isWroking, string optionSelected, MenuSqlRepository<Drink> drinkRepository, MenuSqlRepository<Meal> foodRepository)
+
+	static string OptionSelectedMethod() => Console.ReadLine().ToLower();
+	
+	bool SelectingWhatUserWishesToDoMethod(bool isWroking, string optionSelected, MenuSqlRepository<Drink> drinkRepository, MenuSqlRepository<Meal> foodRepository)
 	{
 		switch (optionSelected)
 		{
@@ -108,5 +115,6 @@ public class App : IApp
 		}
 		return isWroking;
 	}
+
 }
 

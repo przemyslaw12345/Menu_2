@@ -1,12 +1,15 @@
 ﻿
 
-public class Viewing : IViewing
+public class ViewingItemsInDatabase : IViewingItemsInDatabase
 	{
 	public void ViewMenuGeneralMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
 		Console.Clear();
+
 		MenuGreeting();
+
 		string orderMenu = OrderMenu();
+
 		switch (orderMenu)
 		{
 			case "y":
@@ -27,6 +30,7 @@ public class Viewing : IViewing
 		}
 		
 	}
+
 	void MenuGreeting()
 	{
 		Console.WriteLine($"Thank you for dining at Soylent Green Cafe where our Customer is our specialty!!{Environment.NewLine}" +
@@ -34,7 +38,9 @@ public class Viewing : IViewing
 			$"Would you like to order the menu? [y/n] {Environment.NewLine}"
 			);
 	}
+
 	private string OrderMenu() => Console.ReadLine().ToLower();
+
 	private void HowToOrderMenu(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
 		Console.Clear();
@@ -65,16 +71,16 @@ public class Viewing : IViewing
 	{
 		Type type = typeof(T);
 		Console.WriteLine($"---------------------{type.Name.ToString()} Menu---------------------");
-		var items = tempRepository.GetAll().OrderBy(i => i.itemPrice).ToList();
+		var items = tempRepository.GetAll().OrderBy(i => i.ItemPrice).ToList();
 		foreach (var item in items)
 		{
-			if (item.ingredients != null)
+			if (item.Ingredients != null)
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine + String.Join(", ", item.ingredients));
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine + String.Join(", ", item.Ingredients));
 			}
 			else
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine);
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine);
 			}
 		}
 	}
@@ -84,16 +90,16 @@ public class Viewing : IViewing
 	{
 		Type type = typeof(T);
 		Console.WriteLine($"---------------------{type.Name.ToString()} Menu---------------------");
-		var items = tempRepository.GetAll().OrderBy(i => i.itemName).ToList();
+		var items = tempRepository.GetAll().OrderBy(i => i.ItemName).ToList();
 		foreach (var item in items)
 		{
-			if (item.ingredients != null)
+			if (item.Ingredients != null)
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine + String.Join(", ", item.ingredients));
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine + String.Join(", ", item.Ingredients));
 			}
 			else
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine);
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine);
 			}
 		}
 	}
@@ -106,18 +112,19 @@ public class Viewing : IViewing
         var items = subMenuRepository.GetAll();
 		foreach (var item in items)
 		{
-			if (item.ingredients != null)
+			if (item.Ingredients != null)
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine + String.Join(", ", item.ingredients));
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine + String.Join(", ", item.Ingredients));
 			}
 			else
 			{
-				Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice + Environment.NewLine);
+				Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice + Environment.NewLine);
 			}
 
 			//item.ingredients.ForEach(Console.WriteLine);
 		}
 	}
+
 }
 
 

@@ -1,17 +1,19 @@
 ﻿
-public class Removing : IRemoving
+public class RemovingFromDatabase : IRemovingFromDatabase
 	{
 	
-	private readonly IAdding _adding;
-	private readonly IViewing _viewing;
-	public Removing(
-		IAdding adding,
-		IViewing viewing)
+	private readonly IAddingToDatabase _adding;
+	private readonly IViewingItemsInDatabase _viewing;
+
+	public RemovingFromDatabase(
+		IAddingToDatabase adding,
+		IViewingItemsInDatabase viewing)
 	{
 		
 		_adding = adding;
 		_viewing = viewing;
 	}
+
 	public void RemoveFromMenuMethod(IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
 		bool isWorking = true;
@@ -19,17 +21,20 @@ public class Removing : IRemoving
 		{
 			Console.Clear();
 			WhatToRemoveText();
-			string optionToRemoveSelected = optionToRemoveSelectedMethod();
-			selectingWhatToRemoveFromTheMenuMethod(optionToRemoveSelected, drinkRepository, foodRepository);
+			string optionToRemoveSelected = OptionToRemoveSelectedMethod();
+			SelectingWhatToRemoveFromTheMenuMethod(optionToRemoveSelected, drinkRepository, foodRepository);
 			isWorking = ContinueRemovingMethod(isWorking);
 		}
 	}
+
 	void WhatToRemoveText()
 	{
 		Console.WriteLine("Would you like to remove a [drink] or [meal] from the menu");
 	}
-	string optionToRemoveSelectedMethod() => (Console.ReadLine());
-	void selectingWhatToRemoveFromTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
+
+	string OptionToRemoveSelectedMethod() => (Console.ReadLine());
+
+	void SelectingWhatToRemoveFromTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Meal> foodRepository)
 	{
 		bool isWorkingSubLoop = true;
 		while (isWorkingSubLoop)
@@ -48,13 +53,14 @@ public class Removing : IRemoving
 					break;
 				default:
 					Console.WriteLine("You entered an invalid option, please try again");
-					optionToAddSelected = _adding.optionToAddSelectedMethod();
+					optionToAddSelected = _adding.OptionToAddSelectedMethod();
 					isWorkingSubLoop = true;
 					Console.ReadKey();
 					break;
 			}
 		}
 	}
+
 	void RemoveMethod<T>(IRepository<T> tempRepository)
 		where T : class, ICafeMenu
 	{
@@ -66,7 +72,9 @@ public class Removing : IRemoving
 		tempRepository.RemoveItem(itemToRemove);
 		tempRepository.Save();
 	}
+
 	int RemoveOptionNumberMethod() => int.Parse(Console.ReadLine());
+
 	bool ContinueRemovingMethod(bool isWorking)
 	{
 		bool isWorkingSubLoop = true;
@@ -92,5 +100,6 @@ public class Removing : IRemoving
 		}
 		return isWorking;
 	}
+
 }
 
